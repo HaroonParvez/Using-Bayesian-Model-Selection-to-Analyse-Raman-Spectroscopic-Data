@@ -1,161 +1,119 @@
-# third-year-project-raman-bfi
-# Raman Spectroscopy – Bayesian Factor of Information (BFI) Analysis
+# Bayesian Model Selection for Raman Spectroscopy of *E. coli*
 
-This repository contains a snapshot of a third-year undergraduate project analysing the
-**information content of Raman spectroscopy data** using a **Bayesian evidence / BFI approach**.
+This repository contains the code and data used for my third-year final project on applying Bayesian model selection to Raman spectroscopy data from *Escherichia coli*.
 
-The purpose of this snapshot is **code review and validation** (not deployment or reuse).
+The project focuses on using the Bayes Factor Integral (BFI) to determine which biomolecular reference spectra are genuinely justified when fitting measured Raman spectra. Rather than fitting every available component, the aim is to identify a smaller, statistically supported model that explains the data while avoiding overfitting.
 
----
+## Project Overview
 
-## Project aim
+Raman spectroscopy provides a non-invasive and label-free way to study biological samples by measuring molecular vibrational information. However, Raman spectra from bacterial cells are difficult to interpret because the measured signal is usually a mixture of many overlapping biomolecular contributions.
 
-Raman spectra often contain many visible peaks, but not all of them represent
-**independent, statistically supported information**.
+In this project, measured *E. coli* Raman spectra are modelled as a linear combination of reference biomolecular spectra, with additional baseline terms included to account for background effects. Different combinations of reference spectra are tested, and model selection metrics are used to decide which model is most appropriate.
 
-The core question of this project is:
+The main focus is the Bayes Factor Integral, which combines information about:
 
-> *How many independent spectral features are supported by the data, once model
-complexity is properly penalised?*
+- quality of fit
+- model complexity
+- parameter uncertainty
+- prior parameter volume
+- correlations between fitted parameters
 
-This is addressed using a **Bayesian Factor of Information (BFI)** framework, rather than
-heuristic peak counting.
+This allows the project to compare models more carefully than using fit quality alone.
 
----
+## Repository Contents
 
-## Data overview
+```text
+.
+├── Copy_of_Ecol_Raman.xlsx
+├── HaroonParvezFinalProject.ipynb
+├── README.md
+└── .gitattributes
+```
 
-The input CSV contains three conceptually different data components:
+## Files
 
-1. **Log spectrum**
-   - A single representative Raman spectrum.
-   - Used to estimate the *maximum* apparent spectral information content.
+### `HaroonParvezFinalProject.ipynb`
 
-2. **STA spectrum**
-   - A statistically processed version of the Raman data.
-   - Used to test whether the information limit is noise-driven or structural.
+This is the main Jupyter Notebook for the project. It contains the full analysis workflow, including:
 
-3. **Biological data**
-   - Non-spectral variables related to cells / biological conditions.
-   - These are *not* fitted with peaks and are not treated as spectra.
-   - They provide biological context rather than spectral information content.
+- loading the Raman spectroscopy data
+- preparing the measured and reference spectra
+- fitting linear combination models
+- applying non-negative least squares fitting
+- calculating model comparison statistics
+- implementing the Bayes Factor Integral
+- comparing BFI with other metrics such as AIC, BIC, chi-squared, reduced chi-squared and R²
+- producing plots and results used in the final project
 
-This snapshot focuses on the **log spectrum** (and later STA) for BFI analysis.
+### `Copy_of_Ecol_Raman.xlsx`
 
----
+This spreadsheet contains the Raman spectroscopy data used in the project, including the measured *E. coli* spectra and reference biomolecular spectra.
 
-## Analysis pipeline (current approach)
+### `.gitattributes`
 
-The analysis is implemented in a single Jupyter notebook (`main.ipynb`) and proceeds as follows:
+This file is used by GitHub for repository handling and file tracking.
 
-1. **Baseline estimation**
-   - Asymmetric least-squares (AsLS) baseline correction.
-   - Baseline is used for peak detection but not over-subtracted in fitting.
+## Method Summary
 
-2. **Peak detection**
-   - SciPy `find_peaks` with physically motivated thresholds:
-     - minimum separation (cm⁻¹)
-     - prominence relative to signal scale
-   - Produces a list of candidate peak centres.
+The measured Raman spectrum is treated as a combination of baseline terms and selected reference spectra. In matrix form, this can be written as:
 
-3. **Spectral model**
-   - Polynomial baseline (degree 2) + fixed-shape Voigt profiles.
-   - Voigt widths (σ, γ) are fixed to physically reasonable values.
-   - Only **amplitudes** are fitted (linear least squares).
+```text
+y = Aβ + ε
+```
 
-4. **Bayesian evidence / ln(BFI)**
-   - Evidence computed using a Laplace approximation.
-   - Includes:
-     - residual variance estimate
-     - covariance determinant
-     - explicit parameter priors
-     - Occam penalty for model complexity
+where:
 
-5. **Forward model selection**
-   - Peaks are added sequentially.
-   - At each step, ln(BFI) is recomputed.
-   - The optimal number of peaks N* is identified as the **maximum of ln(BFI)**.
-   - Δln(BFI) is also inspected to identify the onset of overfitting.
+- `y` is the measured Raman spectrum
+- `A` is the design matrix containing baseline terms and selected reference spectra
+- `β` is the vector of fitted coefficients
+- `ε` is the residual noise
 
----
+The project uses non-negative fitting because biomolecular contributions should not have negative concentrations. Models are then compared by adding reference spectra step by step and evaluating whether each added component is statistically justified.
 
-## Key issue encountered (and resolved)
+## Model Selection
 
-### Problem
-Initial implementations produced **monotonically increasing ln(BFI)** values,
-sometimes reaching extremely large magnitudes.  
-This indicated that model complexity was not being penalised correctly.
+Several model selection and fit-quality metrics are compared:
 
-Root causes included:
-- inconsistent noise variance definitions
-- missing or mis-scaled prior volumes
-- overly permissive peak selection (effectively double-counting structure)
-- hidden state from notebook execution order
+- Bayes Factor Integral (BFI)
+- Akaike Information Criterion (AIC)
+- Bayesian Information Criterion (BIC)
+- chi-squared
+- reduced chi-squared
+- coefficient of determination (R²)
 
-### Resolution
-The current working solution fixes this by:
-- using a consistent residual variance definition tied to degrees of freedom
-- explicitly including prior widths in ln(BFI)
-- fixing Voigt shapes to reduce non-identifiability
-- enforcing a physically motivated minimum peak separation
-- running forward selection with explicit stopping logic
+The BFI is the main metric because it includes an Occam factor, meaning that unnecessary extra parameters are penalised. This is important because adding more spectra will usually improve the raw fit, but that does not mean every added component is genuinely supported by the data.
 
-As a result:
-- ln(BFI) now **rises, peaks, and then decreases**
-- Δln(BFI) becomes negative beyond the optimum
-- the model exhibits a clear Occam turnover
+## Main Aim
 
-This behaviour is the expected Bayesian outcome.
+The aim of the project is to improve the interpretation of Raman spectra from *E. coli* by selecting the most justified biomolecular components in the spectrum. This helps avoid overfitting and gives a more reliable interpretation of the biological information contained in the Raman data.
 
----
+## Requirements
 
-## Current results (log spectrum)
+The notebook uses Python and common scientific computing libraries, including:
 
-With physically reasonable settings (e.g. minimum separation ≈ 15 cm⁻¹):
+- NumPy
+- pandas
+- SciPy
+- Matplotlib
+- scikit-learn
+- openpyxl
 
-- ln(BFI) peaks at **N* ≈ 12 peaks**
-- Adding further peaks decreases evidence
-- The result is stable to reasonable changes in constraints
-  (e.g. stricter separation gives N* ≈ 11)
+These can be installed using:
 
-This demonstrates that the Raman spectrum contains a **finite, quantifiable number
-of independent spectral degrees of freedom**, despite many visually identifiable peaks.
+```bash
+pip install numpy pandas scipy matplotlib scikit-learn openpyxl
+```
 
----
+## How to Run
 
-## Files in this snapshot
+1. Clone or download this repository.
+2. Open `HaroonParvezFinalProject.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
+3. Make sure `Copy_of_Ecol_Raman.xlsx` is in the same folder as the notebook.
+4. Run the notebook cells in order.
 
-- `main.ipynb`
-  - Source of truth.
-  - Full analysis with plots and diagnostics.
-  - Intended to be run top-to-bottom.
+## Author
 
-- `main.py`
-  - Auto-exported linear script (`nbconvert`).
-  - Provided for code review and static analysis.
-  - Not edited directly.
-
-- `README.md`
-  - Project context for reviewers.
-
----
-
-## Notes for code reviewers (Codex)
-
-- The notebook is stateful; `main.py` represents the linearised execution.
-- The primary focus of review should be:
-  - correctness of the ln(BFI) calculation
-  - consistency of noise variance handling
-  - model selection logic and stopping criteria
-  - separation of spectral vs biological data usage
-- This repository is **not** intended as a reusable software package.
-
----
-
-## Status
-
-The analysis pipeline is currently **stable and working as intended**.
-Further work applies the same framework to the STA spectrum and compares
-spectral information content to biological variability.
-
-
+Haroon Parvez  
+Third Year Project  
+Queen Mary University of London  
+Physics and Data Science
