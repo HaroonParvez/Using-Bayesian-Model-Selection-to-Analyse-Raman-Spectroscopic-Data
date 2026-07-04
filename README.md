@@ -1,30 +1,47 @@
 # Bayesian Model Selection for Raman Spectroscopy of *E. coli*
 
-This repository contains the code and data for my third-year final project, where I applied data analysis and Bayesian statistical methods to Raman spectroscopic data from the bacteria E.coli.
+Final year physics project applying Bayesian statistical model selection to biological spectroscopy data — using a custom implementation of the Bayes Factor Integral (BFI) to determine how many biomolecular components are genuinely supported by noisy, overlapping Raman data, rather than relying on fit quality alone.
 
-The project focuses on analysing spectral data to identify the biomolecular components that best explain each measurement using the Bayes Factor Integral (BFI). By selecting only statistically supported components, the approach improves model reliability while reducing overfitting and demonstrating a practical data-driven decision-making workflow.
+**📄 Read the full report:** [FinalProjectReport_HaroonParvez_220475901.pdf](FinalProjectReport_HaroonParvez_220475901.pdf) — recommended starting point, includes full theory, methodology, results and discussion.
+**💻 Analysis notebook:** [HaroonParvezFinalProject.ipynb](HaroonParvezFinalProject.ipynb) — full code implementation.
+
+---
+
+## Why this project
+
+Raman spectra from bacterial cells contain overlapping signals from dozens of biomolecules, making it hard to know how many are actually detectable versus how many would just be fitting noise. This project adapts a Bayesian model selection method — originally developed for X-ray spectroscopy (EXAFS) — to a completely different domain (biological Raman spectroscopy), and benchmarks it against standard statistical criteria (AIC, BIC, χ², R²) to demonstrate a measurable advantage in handling correlated model parameters.
+
+This is fundamentally a **model selection and statistical inference problem**: given a signal that can be explained by many overlapping candidate variables, how do you objectively decide how many to include without overfitting?
 
 ## Project Overview
 
-Raman spectroscopy provides a non-invasive and label-free way to study biological samples by measuring molecular vibrational information. However, Raman spectra from bacterial cells are difficult to interpret because the measured signal is usually a mixture of many overlapping biomolecular contributions.
+*E. coli* Raman spectra (log and stationary growth phase) are modelled as linear combinations of 15 reference biomolecular spectra, plus a polynomial baseline to absorb residual background. A forward selection algorithm builds up the model one component at a time, using the Bayes Factor Integral to decide which additions are statistically justified — accounting for:
 
-In this project, measured *E. coli* Raman spectra are modelled as a linear combination of reference biomolecular spectra, with additional baseline terms included to account for background effects. Different combinations of reference spectra are tested, and model selection metrics are used to decide which model is most appropriate.
-
-The main focus is the Bayes Factor Integral, which combines information about:
-
-- quality of fit
+- goodness of fit
 - model complexity
-- parameter uncertainty
-- prior parameter volume
+- parameter uncertainty (via the covariance matrix)
 - correlations between fitted parameters
+- prior parameter ranges
 
-This allows the project to compare models more carefully than using fit quality alone.
+This is compared directly against conventional model selection criteria (AIC, BIC, χ², reduced χ², R²) to show where accounting for parameter correlation changes the outcome.
+
+## Report
+
+The full report (31 pages) covers:
+
+- **Theory** — Raman spectroscopy fundamentals, linear combination fitting, the overfitting problem, and the Bayesian derivation of the BFI
+- **Methodology** — data preprocessing, design matrix construction, bounded non-negative least squares fitting, and the forward selection procedure
+- **Results** — optimal model complexity for each growth phase (8 components for log phase, 10 for stationary), fit quality assessment, and a full comparison against conventional criteria
+- **Discussion** — biological interpretation of the selected components, limitations of the approach, and comparison with existing literature
+
+Reading the report first gives the full context before diving into the code.
 
 ## Repository Contents
 
 ```text
 .
 ├── Copy_of_Ecol_Raman.xlsx
+├── FinalProjectReport_HaroonParvez_220475901.pdf
 ├── HaroonParvezFinalProject.ipynb
 ├── README.md
 └── .gitattributes
@@ -34,82 +51,66 @@ This allows the project to compare models more carefully than using fit quality 
 
 ### `HaroonParvezFinalProject.ipynb`
 
-This is the main Jupyter Notebook for the project. It contains the full analysis workflow, including:
+The full analysis pipeline, including:
 
-- loading the Raman spectroscopy data
-- preparing the measured and reference spectra
-- fitting linear combination models
-- applying non-negative least squares fitting
-- calculating model comparison statistics
-- implementing the Bayes Factor Integral
-- comparing BFI with other metrics such as AIC, BIC, chi-squared, reduced chi-squared and R²
-- producing plots and results used in the final project
+- Data loading and preprocessing (normalisation, alignment of measured and reference spectra)
+- Design matrix construction (baseline + reference spectra)
+- Bounded non-negative least squares fitting (`scipy.optimize.lsq_linear`)
+- A from-scratch implementation of the Bayes Factor Integral, including the Occam factor and covariance-based parameter correlation penalty
+- Forward selection algorithm for model comparison
+- Independent benchmarking against AIC, BIC, χ², reduced χ², and R²
+- All plots and results referenced in the report
 
 ### `Copy_of_Ecol_Raman.xlsx`
 
-This spreadsheet contains the Raman spectroscopy data used in the project, including the measured *E. coli* spectra and reference biomolecular spectra.
+Raw Raman spectroscopy data: measured *E. coli* spectra (log and stationary growth phase) and the 15 reference biomolecular spectra used for fitting.
 
 ## Method Summary
 
-The measured Raman spectrum is treated as a combination of baseline terms and selected reference spectra. In matrix form, this can be written as:
+The measured spectrum is modelled as:
 
 ```text
 y = Aβ + ε
 ```
 
-where:
-
-- `y` is the measured Raman spectrum
-- `A` is the design matrix containing baseline terms and selected reference spectra
-- `β` is the vector of fitted coefficients
-- `ε` is the residual noise
-
-The project uses non-negative fitting because biomolecular contributions should not have negative concentrations. Models are then compared by adding reference spectra step by step and evaluating whether each added component is statistically justified.
+where `A` is the design matrix (baseline terms + selected reference spectra), `β` is the vector of fitted coefficients, and `ε` is residual noise. Fitting is constrained to non-negative biomolecular coefficients, since a biomolecule can only contribute signal, never subtract it.
 
 ## Model Selection
 
-Several model selection and fit-quality metrics are compared:
+Six criteria are implemented and compared, each running its own independent forward selection:
 
-- Bayes Factor Integral (BFI)
+- **Bayes Factor Integral (BFI)** — the primary metric, incorporating an Occam factor that penalises correlated or poorly-constrained parameters
 - Akaike Information Criterion (AIC)
 - Bayesian Information Criterion (BIC)
-- chi-squared
-- reduced chi-squared
-- coefficient of determination (R²)
+- χ² and reduced χ²
+- Coefficient of determination (R²)
 
-The BFI is the main metric because it includes an Occam factor, meaning that unnecessary extra parameters are penalised. This is important because adding more spectra will usually improve the raw fit, but that does not mean every added component is genuinely supported by the data.
+The BFI consistently selects the smallest fully-supported model, while conventional criteria tend to include additional components that improve fit only marginally — a direct illustration of why accounting for parameter correlation matters in overlapped spectral data.
 
-## Main Aim
+## Skills Demonstrated
 
-The aim of the project is to improve the interpretation of Raman spectra from *E. coli* by selecting the most justified biomolecular components in the spectrum. This helps avoid overfitting and gives a more reliable interpretation of the biological information contained in the Raman data.
+- Statistical model selection and Bayesian inference
+- Constrained optimisation (bounded non-negative least squares)
+- Custom implementation of a published statistical method (BFI) in a novel domain
+- Benchmarking against standard model selection criteria (AIC, BIC, χ²)
+- Data preprocessing and signal alignment
+- Scientific data visualisation (Matplotlib)
+- Working with real experimental biological data
 
 ## Requirements
 
-The notebook uses Python and common scientific computing libraries, including:
-
-- NumPy
-- pandas
-- SciPy
-- Matplotlib
-- scikit-learn
-- openpyxl
-
-These can be installed using:
-
 ```bash
-pip install numpy pandas scipy matplotlib scikit-learn openpyxl
+pip install numpy pandas scipy matplotlib openpyxl
 ```
 
 ## How to Run
 
 1. Clone or download this repository.
 2. Open `HaroonParvezFinalProject.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
-3. Make sure `Copy_of_Ecol_Raman.xlsx` is in the same folder as the notebook.
-4. Run the notebook cells in order.
+3. Ensure `Copy_of_Ecol_Raman.xlsx` is in the same folder as the notebook.
+4. Run the cells in order.
 
 ## Author
 
-Haroon Parvez  
-Third Year Project  
-Queen Mary University of London  
-Physics and Data Science
+Haroon Parvez
+BSc Physics, Queen Mary University of London
