@@ -116,5 +116,9 @@ pip install numpy pandas scipy matplotlib openpyxl
 ## Author
 
 Haroon Parvez
-BSc Physics with Data Science
+BSc Physics with Data Science @ 
 Queen Mary University of London
+
+## License
+
+All rights reserved. This repository is shared publicly for portfolio and demonstration purposes only. No part of this code, data, or report may be copied, reproduced, or reused without explicit permission from the author.
