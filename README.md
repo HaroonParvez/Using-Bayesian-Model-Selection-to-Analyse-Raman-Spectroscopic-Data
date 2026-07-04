@@ -1,8 +1,8 @@
 # Bayesian Model Selection for Raman Spectroscopy of *E. coli*
 
-This repository contains the code and data used for my third-year final project on applying Bayesian model selection to Raman spectroscopy data from *Escherichia coli*.
+This repository contains the code and data for my third-year final project, where I applied data analysis and Bayesian statistical methods to Raman spectroscopic data from the bacteria E.coli.
 
-The project focuses on using the Bayes Factor Integral (BFI) to determine which biomolecular reference spectra are genuinely justified when fitting measured Raman spectra. Rather than fitting every available component, the aim is to identify a smaller, statistically supported model that explains the data while avoiding overfitting.
+The project focuses on analysing spectral data to identify the biomolecular components that best explain each measurement using the Bayes Factor Integral (BFI). By selecting only statistically supported components, the approach improves model reliability while reducing overfitting and demonstrating a practical data-driven decision-making workflow.
 
 ## Project Overview
 
