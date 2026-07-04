@@ -49,10 +49,6 @@ This is the main Jupyter Notebook for the project. It contains the full analysis
 
 This spreadsheet contains the Raman spectroscopy data used in the project, including the measured *E. coli* spectra and reference biomolecular spectra.
 
-### `.gitattributes`
-
-This file is used by GitHub for repository handling and file tracking.
-
 ## Method Summary
 
 The measured Raman spectrum is treated as a combination of baseline terms and selected reference spectra. In matrix form, this can be written as:
