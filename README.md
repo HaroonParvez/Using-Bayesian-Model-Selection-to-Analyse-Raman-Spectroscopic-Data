@@ -116,4 +116,5 @@ pip install numpy pandas scipy matplotlib openpyxl
 ## Author
 
 Haroon Parvez
-BSc Physics, Queen Mary University of London
+BSc Physics with Data Science
+Queen Mary University of London
