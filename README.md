@@ -6,7 +6,7 @@ The project focuses on analysing spectral data to identify the biomolecular comp
 
 **📄 Read the full report:** [Dissertation_HaroonParvez.pdf](Dissertation_HaroonParvez.pdf)
 
-**💻 Analysis notebook:** [Data_Analysis_Code.ipynb](Data_Analysis_Code.ipynb)
+**💻 Analysis notebook:** [Data_Analysis.ipynb](Data_Analysis.ipynb)
 
 ---
 
@@ -45,14 +45,14 @@ Reading the report first gives the full context before diving into the code.
 .
 ├── Raman_Data.xlsx
 ├── Dissertation_HaroonParvez.pdf
-├── Data_Analysis_Code.ipynb
+├── Data_Analysis.ipynb
 ├── README.md
 └── .gitattributes
 ```
 
 ## Files
 
-### `Data_Analysis_Code.ipynb`
+### `Data_Analysis.ipynb`
 
 The full analysis pipeline, including:
 
@@ -109,7 +109,7 @@ pip install numpy pandas scipy matplotlib openpyxl
 ## How to Run
 
 1. Clone or download this repository.
-2. Open `Data_Analysis_Code.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
+2. Open `Data_Analysis.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
 3. Ensure `Raman_Data.xlsx` is in the same folder as the notebook.
 4. Run the cells in order.
 
