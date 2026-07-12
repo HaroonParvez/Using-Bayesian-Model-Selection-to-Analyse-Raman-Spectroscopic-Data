@@ -43,16 +43,16 @@ Reading the report first gives the full context before diving into the code.
 
 ```text
 .
-├── Copy_of_Ecol_Raman.xlsx
-├── FinalProjectReport_HaroonParvez_220475901.pdf
-├── HaroonParvezFinalProject.ipynb
+├── Raman_Data.xlsx
+├── Dissertation_HaroonParvez.pdf
+├── Data_Analysis_Code.ipynb
 ├── README.md
 └── .gitattributes
 ```
 
 ## Files
 
-### `HaroonParvezFinalProject.ipynb`
+### `Data_Analysis_Code.ipynb`
 
 The full analysis pipeline, including:
 
@@ -64,7 +64,7 @@ The full analysis pipeline, including:
 - Independent benchmarking against AIC, BIC, χ², reduced χ², and R²
 - All plots and results referenced in the report
 
-### `Copy_of_Ecol_Raman.xlsx`
+### `Raman_Data.xlsx`
 
 Raw Raman spectroscopy data: measured *E. coli* spectra (log and stationary growth phase) and the 15 reference biomolecular spectra used for fitting.
 
@@ -109,8 +109,8 @@ pip install numpy pandas scipy matplotlib openpyxl
 ## How to Run
 
 1. Clone or download this repository.
-2. Open `HaroonParvezFinalProject.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
-3. Ensure `Copy_of_Ecol_Raman.xlsx` is in the same folder as the notebook.
+2. Open `Data_Analysis_Code.ipynb` in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
+3. Ensure `Raman_Data.xlsx` is in the same folder as the notebook.
 4. Run the cells in order.
 
 ## Author
