@@ -12,13 +12,13 @@ The project focuses on analysing spectral data to identify the biomolecular comp
 
 ## Why this project
 
-Raman spectra from bacterial cells contain overlapping signals from dozens of biomolecules, making it hard to know how many are actually detectable versus how many would just be fitting noise. This project adapts a Bayesian model selection method — originally developed for X-ray spectroscopy (EXAFS) — to a completely different domain (biological Raman spectroscopy), and benchmarks it against standard statistical criteria (AIC, BIC, χ², R²) to demonstrate a measurable advantage in handling correlated model parameters.
+Raman spectra from bacterial cells contain overlapping signals from dozens of biomolecules, making it hard to know how many are actually detectable versus how many would just be fitting noise. This project adapts a Bayesian model selection method - originally developed for X-ray spectroscopy (EXAFS) - to a completely different domain (biological Raman spectroscopy), and benchmarks it against standard statistical criteria (AIC, BIC, χ², R²) to demonstrate a measurable advantage in handling correlated model parameters.
 
 This is fundamentally a **model selection and statistical inference problem**: given a signal that can be explained by many overlapping candidate variables, how do you objectively decide how many to include without overfitting?
 
 ## Project Overview
 
-*E. coli* Raman spectra (log and stationary growth phase) are modelled as linear combinations of 15 reference biomolecular spectra, plus a polynomial baseline to absorb residual background. A forward selection algorithm builds up the model one component at a time, using the Bayes Factor Integral to decide which additions are statistically justified — accounting for:
+*E. coli* Raman spectra (log and stationary growth phase) are modelled as linear combinations of 15 reference biomolecular spectra, plus a polynomial baseline to absorb residual background. A forward selection algorithm builds up the model one component at a time, using the Bayes Factor Integral to decide which additions are statistically justified, accounting for:
 
 - goodness of fit
 - model complexity
@@ -32,10 +32,10 @@ This is compared directly against conventional model selection criteria (AIC, BI
 
 The full report (31 pages) covers:
 
-- **Theory** — Raman spectroscopy fundamentals, linear combination fitting, the overfitting problem, and the Bayesian derivation of the BFI
-- **Methodology** — data preprocessing, design matrix construction, bounded non-negative least squares fitting, and the forward selection procedure
-- **Results** — optimal model complexity for each growth phase (8 components for log phase, 10 for stationary), fit quality assessment, and a full comparison against conventional criteria
-- **Discussion** — biological interpretation of the selected components, limitations of the approach, and comparison with existing literature
+- **Theory** - Raman spectroscopy fundamentals, linear combination fitting, the overfitting problem, and the Bayesian derivation of the BFI
+- **Methodology** - data preprocessing, design matrix construction, bounded non-negative least squares fitting, and the forward selection procedure
+- **Results** - optimal model complexity for each growth phase (8 components for log phase, 10 for stationary), fit quality assessment, and a full comparison against conventional criteria
+- **Discussion** - biological interpretation of the selected components, limitations of the approach, and comparison with existing literature
 
 Reading the report first gives the full context before diving into the code.
 
@@ -82,13 +82,13 @@ where `A` is the design matrix (baseline terms + selected reference spectra), `�
 
 Six criteria are implemented and compared, each running its own independent forward selection:
 
-- **Bayes Factor Integral (BFI)** — the primary metric, incorporating an Occam factor that penalises correlated or poorly-constrained parameters
+- **Bayes Factor Integral (BFI)** - the primary metric, incorporating an Occam factor that penalises correlated or poorly-constrained parameters
 - Akaike Information Criterion (AIC)
 - Bayesian Information Criterion (BIC)
 - χ² and reduced χ²
 - Coefficient of determination (R²)
 
-The BFI consistently selects the smallest fully-supported model, while conventional criteria tend to include additional components that improve fit only marginally — a direct illustration of why accounting for parameter correlation matters in overlapped spectral data.
+The BFI consistently selects the smallest fully-supported model, while conventional criteria tend to include additional components that improve fit only marginally - a direct illustration of why accounting for parameter correlation matters in overlapped spectral data.
 
 ## Skills Demonstrated
 
