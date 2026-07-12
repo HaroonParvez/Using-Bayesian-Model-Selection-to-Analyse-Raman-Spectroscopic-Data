@@ -4,9 +4,9 @@ This repository contains the code and data for my third-year final project, wher
 
 The project focuses on analysing spectral data to identify the biomolecular components that best explain each measurement using the Bayes Factor Integral (BFI). By selecting only statistically supported components, the approach improves model reliability while reducing overfitting and demonstrating a practical data-driven decision-making workflow.
 
-**📄 Read the full report:** [FinalProjectReport_HaroonParvez_220475901.pdf](Dissertation_HaroonParvez.pdf)
+**📄 Read the full report:** [Dissertation_HaroonParvez.pdf](Dissertation_HaroonParvez.pdf)
 
-**💻 Analysis notebook:** [HaroonParvezFinalProject.ipynb](Data_Analysis_Code.ipynb)
+**💻 Analysis notebook:** [Data_Analysis_Code.ipynb](Data_Analysis_Code.ipynb)
 
 ---
 
