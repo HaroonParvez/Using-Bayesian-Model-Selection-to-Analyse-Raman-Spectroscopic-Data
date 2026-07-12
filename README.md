@@ -2,7 +2,7 @@
 
 This repository contains the code and data for my third-year final project, where I applied data analysis and Bayesian statistical methods to Raman spectroscopic data from the bacteria E.coli.
 
-The project focuses on analysing spectral data to identify the biomolecular components that best explain each measurement using the Bayes Factor Integral (BFI). By selecting only statistically supported components, the approach improves model reliability while reducing overfitting and demonstrating a practical data-driven decision-making workflow.
+The project focuses on analysing spectral data to identify the biomolecular components that best explain each measurement using the Bayes Factor Integral (BFI). By selecting only statistically supported components, the approach improves model reliability while reducing overfitting and demonstrating a practical data-driven decision-making workflow. It is reccomended to read the report before having a look at the code for better context of the workflow and methodology.
 
 **📄 Read the full report:** [Dissertation_HaroonParvez.pdf](Dissertation_HaroonParvez.pdf)
 
